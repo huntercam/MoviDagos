@@ -1,0 +1,8 @@
+{
+    "name": "secundario/movi-dagos",
+    "description": "Trabajo De Dagos Para Movi",
+    "type": "project",
+    "license": "NONE",
+    "minimum-stability": "dev",
+    "require": {}
+}
