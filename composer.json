@@ -1,8 +1,10 @@
 {
-    "name": "secundario/movi-dagos",
-    "description": "Trabajo De Dagos Para Movi",
-    "type": "project",
-    "license": "NONE",
-    "minimum-stability": "dev",
-    "require": {}
+    "autoload": {
+       "psr-4": {
+          "TrabajoTarjeta\\": "src"
+       }
+    },
+    "require": {
+        "phpunit/phpunit": "^6"
+    }
 }
