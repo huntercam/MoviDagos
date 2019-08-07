@@ -19,12 +19,9 @@ jobs:
 
       - run: composer install -n --prefer-dist
 
-
+      - run: docker-compose exec fpm tests #corre los tests
 
       # run tests with phpunit or codecept
       #- run: ./vendor/bin/phpunit
 
- 	- run:
-          name: Run phpunit tests
-          command: docker-compose exec fpm tests
 
