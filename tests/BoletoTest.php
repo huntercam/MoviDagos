@@ -15,7 +15,7 @@ class Boleto_Test extends TestCase {
         $tiempo_prueba = new Tiempo();
         $tarjeta = new Tarjeta( $tiempo_prueba, NULL );
         $colectivo = new Colectivo( 'mixta','103', 420 );
-        $valor = 14.70; // 14.80
+        $valor = 14.80;
         $boleto = new Boleto( $colectivo, $tarjeta );
         $this->assertEquals( $boleto->obtener_valor(), $valor );
     }
