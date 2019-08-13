@@ -1,0 +1,37 @@
+1)
+La clase tarjeta_medio_Boleto no cumple con el Principio de responsabilidad única (S) ya que cuenta con funciones que implementan tareas que no son de su responsabilidad. EJ:
+
+ public function tiempo_de_espera_cumplido() {
+        $ultimo_pago = $this->obtener_ultima_fecha_pagada();
+        $fecha_actual = $this->tiempo->time();
+        $diferencia_fechas = $fecha_actual - $ultimo_pago;
+        if( $diferencia_fechas >= $this->obtener_tiempo_de_espera() ) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+"
+$fecha_actual = $this->tiempo->time();
+$diferencia_fechas = $fecha_actual - $ultimo_pago;
+"
+Esta parte deberia ser resuelta en la clase Tiempo.php
+
+
+2)
+La clase tarjeta_medio_Boleto no cumple con el Principio Open/Closed (O) ya que con codigo que no esta cerrado a modificacion. EJ:
+
+    protected $valor = 14.80;
+
+Esto deberia estar resuelto en otra clase Costos.php
+
+3)
+
+La clase tarjeta_medio_Boleto cumple con el Principio de Sustitución de Liskov (L) ya que todas las clases herederas de otras implementan sus respectivas funciones. Los Archivos mas claros donde esto se demuestra es en Boleto.php y Boleto_Interface.php, revisando que cada metodo corresponda a una tarea, y este implemenetada.
+
+
+
+
+
+
