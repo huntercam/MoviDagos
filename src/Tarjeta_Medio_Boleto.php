@@ -1,16 +1,23 @@
 <?php
 
 namespace TrabajoTarjeta;
+include 'Costos.php';
+
+
 
 class Tarjeta_Medio_Boleto extends Tarjeta {
+
+use Pagos;
 
     protected $tipo = 'Medio';
 
     protected $tiempo_de_espera = 300;
 
-    protected $valor = 14.80;
+    protected $valor;
 
     protected $ultimopago = null;
+	
+    protected $valor;
 
     /**
      * Usa la tarjeta para pagar un viaje en un colectivo determinado
@@ -22,12 +29,11 @@ class Tarjeta_Medio_Boleto extends Tarjeta {
      *      Devuelve true si se pudo pagar el viaje y false en caso contrario
      */
     public function pagar_tarjeta( $colectivo ) {
-        $this->valor = 14.80;
+        $this->valor = getCostoViaje();
         if ( $this->tiempo_de_espera_cumplido() ) {
 		    $this->valor = $this->valor / 2; 	
-        } else {
-            $this->valor = 14.80;
         }
+
         if ( $this->saldo < $this->valor ) {
             switch ( $this->viajes_plus ) {
                 case 0:
@@ -50,7 +56,7 @@ class Tarjeta_Medio_Boleto extends Tarjeta {
         } else {
             switch ( $this->viajes_plus ) {
                 case 0:
-                    $this->costo_plus = 14.80 + 14.80;
+                    $this->costo_plus = getCostoViaje() + getCostoViaje();
                     if ( $this->saldo < $this->costo ) {
                         return false;
                     } else {
@@ -69,7 +75,7 @@ class Tarjeta_Medio_Boleto extends Tarjeta {
                             $this->saldo = $this->saldo - $this->costo;
                             $this->caso = 'Pagando Plus';
                             $this->ultimo_pago = $this->tiempo->time();
-                            $this->guardo_cole( $colectivo );
+                            $thvaloris->guardo_cole( $colectivo );
                             $this->trasbordo = true;
                             $this->viajes_plus = 2;
                             return true;
@@ -77,7 +83,7 @@ class Tarjeta_Medio_Boleto extends Tarjeta {
                     }
 
                 case 1:
-                    $this->costo_plus = 14.80;
+                    $this->costo_plus = getCostoViaje();
                     if ( $this->saldo < $this->costo ) {
                         return false;
                     } else {
