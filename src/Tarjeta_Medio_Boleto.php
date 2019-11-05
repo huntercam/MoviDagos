@@ -61,11 +61,11 @@ use Pagos;
                     return true;
             }
         } else { /// lo pagas
-            $this->saldo = $this->saldo - $this->costo;
-	    $this->ultimo_pago = $this->tiempo->time();
-            
-            	$this->caso = 'Normal';
+
             $this->costo = $this->valor;
+            $this->saldo = $this->saldo - $this->costo;
+            
+            	$this->caso = 'Medio';
             if($this->trasbordo){
             	$this->caso = 'Trasbordo';
             }
