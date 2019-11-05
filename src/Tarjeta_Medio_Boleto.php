@@ -16,8 +16,7 @@ use Pagos;
     protected $valor;
 
     protected $ultimopago = null;
-	
-    protected $valor;
+
 
     /**
      * Usa la tarjeta para pagar un viaje en un colectivo determinado
