@@ -41,7 +41,7 @@ use Pagos;
 		   $this->trasbordo = true;
 		   $this->valor = $this->getCostoTransbordo();
         }
-        $this->valor = $this->valor +  (2 - $this->viajes_plus ) * $this->getCostoViaje();
+        $this->valor = $this->valor +  ( (2 - $this->viajes_plus ) * $this->getCostoViaje() );
 
         if ( $this->saldo < $this->valor ) { /// si no te alcanza la plata
             switch ( $this->viajes_plus ) {
@@ -61,10 +61,11 @@ use Pagos;
                     return true;
             }
         } else { /// lo pagas
-            $this->costo = $this->valor;
             $this->saldo = $this->saldo - $this->costo;
+	    $this->ultimo_pago = $this->tiempo->time();
             
             	$this->caso = 'Normal';
+            $this->costo = $this->valor;
             if($this->trasbordo){
             	$this->caso = 'Trasbordo';
             }
