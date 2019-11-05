@@ -5,7 +5,7 @@ namespace TrabajoTarjeta;
 use PHPUnit\Framework\TestCase;
 
 class medio_boletoTest extends TestCase {
-
+use Pagos;
     /**
      * Comprueba que el medio boleto page la mitad que una tarjeta normal en un pago estandar.
      * 
@@ -107,10 +107,10 @@ class medio_boletoTest extends TestCase {
         $colectivo2 = new Colectivo( 'mixta', '102', 421 );
         $medio_boleto->recargar( 50.0 );
         $medio_boleto->pagar_tarjeta( $colectivo );
-        $this->assertEquals( $medio_boleto->obtener_costo(), 7.40 );
+        $this->assertEquals( $medio_boleto->obtener_costo(), $this->getCostoMedioBoleto() );
         $tiempo->avanzar( 300 );
         $medio_boleto->pagar_tarjeta( $colectivo2 );
-        $this->assertEquals( $medio_boleto->obtener_costo(), 2.442 );
+        $this->assertEquals( $medio_boleto->obtener_costo(), 0.0 );
     }
 
     /**
@@ -126,11 +126,11 @@ class medio_boletoTest extends TestCase {
         $colectivo2 = new Colectivo( 'mixta', '102', 421 );
         $medio_boleto->recargar( 50.0 );
         $medio_boleto->pagar_tarjeta( $colectivo );
-        $this->assertEquals( $medio_boleto->obtener_costo(), 7.40 );
+        $this->assertEquals( $medio_boleto->obtener_costo(), $this->getCostoMedioBoleto() );
         $medio_boleto->gastar_plus();
         $tiempo->avanzar( 300 );
         $medio_boleto->pagar_tarjeta( $colectivo2 );
-        $this->assertEquals( $medio_boleto->obtener_costo(), 17.242 );
+        $this->assertEquals( $medio_boleto->obtener_costo(), $this->getCostoViaje() );
     }
 
     /**
@@ -146,11 +146,11 @@ class medio_boletoTest extends TestCase {
         $colectivo2 = new Colectivo( 'mixta', '102', 421 );
         $medio_boleto->recargar( 50.0 );
         $medio_boleto->pagar_tarjeta( $colectivo );
-        $this->assertEquals( $medio_boleto->obtener_costo(), 7.40 );
+        $this->assertEquals( $medio_boleto->obtener_costo(), $this->getCostoMedioBoleto() );
         $medio_boleto->gastar_plus();
         $medio_boleto->gastar_plus();
         $tiempo->avanzar( 300 );
         $medio_boleto->pagar_tarjeta( $colectivo2 );
-        $this->assertEquals( $medio_boleto->obtener_costo(), 32.042 );
+        $this->assertEquals( $medio_boleto->obtener_costo(), $this->getCostoViaje()*2 );
     }
 }
