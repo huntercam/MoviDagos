@@ -1,7 +1,7 @@
 <?php
 
 namespace TrabajoTarjeta;
-include 'Costos.php';
+
 
 
 
@@ -27,8 +27,10 @@ use Pagos;
      * @return bool
      *      Devuelve true si se pudo pagar el viaje y false en caso contrario
      */
+     use Costo;
     public function pagar_tarjeta( $colectivo ) {
-        $this->valor = getCostoViaje();
+        $this->valor = $this->getCostoViaje();
+        //$this->valor = $this->obtenerMedioBoleto();
         if ( $this->tiempo_de_espera_cumplido() ) {
 		    $this->valor = $this->valor / 2; 	
         }
@@ -55,7 +57,7 @@ use Pagos;
         } else {
             switch ( $this->viajes_plus ) {
                 case 0:
-                    $this->costo_plus = getCostoViaje() + getCostoViaje();
+                    $this->costo_plus = $this->getCostoViaje() * 2;
                     if ( $this->saldo < $this->costo ) {
                         return false;
                     } else {
@@ -82,7 +84,7 @@ use Pagos;
                     }
 
                 case 1:
-                    $this->costo_plus = getCostoViaje();
+                    $this->costo_plus = $this->getCostoViaje();
                     if ( $this->saldo < $this->costo ) {
                         return false;
                     } else {
