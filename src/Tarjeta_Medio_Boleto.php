@@ -28,18 +28,20 @@ use Pagos;
 
     public function pagar_tarjeta( $colectivo ) {
         $this->valor = $this->getCostoViaje();
+        
         if ( $this->tiempo_de_espera_cumplido() ) { /// tiempo para usar medio boleto 
 		    $this->valor = $this->getCostoMedioBoleto();
         }
         
         /// $this->viajes_plus te da la cantidad de viajes plus disponibles
-        $this->valor = $this->valor +  (2 - $this->viajes_plus ) * $this->getCostoViaje();
         
         $this->trasbordo = false;
         
         if( $this->hay_trans ( $colectivo ) ){
 		   $this->trasbordo = true;
+		   $this->valor = $this->getCostoTransbordo();
         }
+        $this->valor = $this->valor +  (2 - $this->viajes_plus ) * $this->getCostoViaje();
 
         if ( $this->saldo < $this->valor ) { /// si no te alcanza la plata
             switch ( $this->viajes_plus ) {
