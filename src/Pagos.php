@@ -11,4 +11,11 @@ trait Pagos{
 	return $this->CostoViaje;
  }
 
+ function getCostoMedioBoleto(){
+	return $this->CostoViaje / 2;
+ }
+ function getCostoTransbordo(){
+	return 0.0;
+ }
+
 }

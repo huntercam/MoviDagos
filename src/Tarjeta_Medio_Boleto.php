@@ -3,8 +3,6 @@
 namespace TrabajoTarjeta;
 
 
-
-
 class Tarjeta_Medio_Boleto extends Tarjeta {
 
 use Pagos;
@@ -30,12 +28,20 @@ use Pagos;
 
     public function pagar_tarjeta( $colectivo ) {
         $this->valor = $this->getCostoViaje();
-        //$this->valor = $this->obtenerMedioBoleto();
-        if ( $this->tiempo_de_espera_cumplido() ) {
-		    $this->valor = $this->valor / 2; 	
+        if ( $this->tiempo_de_espera_cumplido() ) { /// tiempo para usar medio boleto 
+		    $this->valor = $this->getCostoMedioBoleto();
+        }
+        
+        /// $this->viajes_plus te da la cantidad de viajes plus disponibles
+        $this->valor = $this->valor +  (2 - $this->viajes_plus ) * $this->getCostoViaje();
+        
+        $this->trasbordo = false;
+        
+        if( $this->hay_trans ( $colectivo ) ){
+		   $this->trasbordo = true;
         }
 
-        if ( $this->saldo < $this->valor ) {
+        if ( $this->saldo < $this->valor ) { /// si no te alcanza la plata
             switch ( $this->viajes_plus ) {
                 case 0:
                     return false;
@@ -44,91 +50,31 @@ use Pagos;
                     $this->costo = 0.0;
                     $this->caso = 'Viaje Plus';
                     $this->guardo_cole( $colectivo );
-                    $this->trasbordo = true;
                     return true;
                 case 2:
                     $this->gastar_plus();
                     $this->costo = 0.0;
                     $this->caso = 'Viaje Plus';
                     $this->guardo_cole( $colectivo );
-                    $this->trasbordo = true;
                     return true;
             }
-        } else {
-            switch ( $this->viajes_plus ) {
-                case 0:
-                    $this->costo_plus = $this->getCostoViaje() * 2;
-                    if ( $this->saldo < $this->costo ) {
-                        return false;
-                    } else {
-                        if ( $this->hay_trans ( $colectivo ) ) {
-                            $this->valor = ( $this->valor * 33 ) / 100;
-                            $this->costo = $this->costo_plus + $this->valor;
-                            $this->saldo = $this->saldo - $this->costo;
-                            $this->caso = 'Trasbordo';
-                            $this->ultimo_pago = $this->tiempo->time();
-                            $this->guardo_cole( $colectivo );
-                            $this->trasbordo = false;
-                            $this->viajes_plus = 2;
-                            return true;
-                        } else {
-                            $this->costo = $this->costo_plus + $this->valor;
-                            $this->saldo = $this->saldo - $this->costo;
-                            $this->caso = 'Pagando Plus';
-                            $this->ultimo_pago = $this->tiempo->time();
-                            $this->guardo_cole( $colectivo );
-                            $this->trasbordo = true;
-                            $this->viajes_plus = 2;
-                            return true;
-                        }
-                    }
-
-                case 1:
-                    $this->costo_plus = $this->getCostoViaje();
-                    if ( $this->saldo < $this->costo ) {
-                        return false;
-                    } else {
-                        if ( $this->hay_trans( $colectivo ) ) {
-                            $this->valor = ( $this->valor * 33 ) / 100;
-                            $this->costo = $this->costo_plus + $this->valor;
-                            $this->saldo = $this->saldo - $this->costo;
-                            $this->caso = 'Trasbordo';
-                            $this->ultimo_pago = $this->tiempo->time();
-                            $this->guardo_cole ($colectivo );
-                            $this->trasbordo = false;
-                            $this->viajes_plus = 2;
-                            return true;
-                        } else {
-                            $this->costo = $this->costo_plus + $this->valor;
-                            $this->saldo = $this->saldo - $this->costo;
-                            $this->caso = 'Pagando Plus';
-                            $this->ultimo_pago = $this->tiempo->time();
-                            $this->guardo_cole( $colectivo );
-                            $this->trasbordo = true;
-                            $this->viajes_plus = 2;
-                            return true;
-                        }
-                    }
-                case 2:
-                    if( $this->hay_trans( $colectivo ) ) { 
-                        $this->valor = ( $this->valor * 33 ) / 100;
-                        $this->costo = $this->costo_plus + $this->valor;
-                        $this->saldo = $this->saldo - $this->costo;
-                        $this->caso = 'Trasbordo';
-                        $this->ultimo_pago = $this->tiempo->time();
-                        $this->guardo_cole( $colectivo );
-                        $this->trasbordo = false;
-                        return true;
-                    } else{
-                        $this->costo = $this->valor;
-                        $this->saldo = $this->saldo - $this->costo;
-                        $this->caso = 'Medio';
-                        $this->ultimo_pago = $this->tiempo->time();
-                        $this->guardo_cole( $colectivo );
-                        $this->trasbordo = true;
-                        return true;
-                    }    
+        } else { /// lo pagas
+            $this->costo = $this->valor;
+            $this->saldo = $this->saldo - $this->costo;
+            
+            	$this->caso = 'Normal';
+            if($this->trasbordo){
+            	$this->caso = 'Trasbordo';
             }
+            if($this->viajes_plus != 2){
+            	$this->caso = 'Pagando Plus';
+            }
+            
+            $this->ultimo_pago = $this->tiempo->time();
+            $this->guardo_cole( $colectivo );
+            $this->viajes_plus = 2;
+            return true;
+        
         }
     
     }
@@ -168,3 +114,4 @@ use Pagos;
         return $this->ultimo_pago;
     }
 }
+
