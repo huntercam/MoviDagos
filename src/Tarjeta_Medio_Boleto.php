@@ -27,7 +27,7 @@ use Pagos;
      * @return bool
      *      Devuelve true si se pudo pagar el viaje y false en caso contrario
      */
-     use Costo;
+
     public function pagar_tarjeta( $colectivo ) {
         $this->valor = $this->getCostoViaje();
         //$this->valor = $this->obtenerMedioBoleto();
