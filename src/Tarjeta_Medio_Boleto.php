@@ -76,7 +76,7 @@ use Pagos;
                             $this->saldo = $this->saldo - $this->costo;
                             $this->caso = 'Pagando Plus';
                             $this->ultimo_pago = $this->tiempo->time();
-                            $thvaloris->guardo_cole( $colectivo );
+                            $this->guardo_cole( $colectivo );
                             $this->trasbordo = true;
                             $this->viajes_plus = 2;
                             return true;
