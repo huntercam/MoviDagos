@@ -25,7 +25,7 @@ use Costos;
         
 		$caso = 'Normal';
 		
-		if( $this->tiempoEsperaMedioCumplido($tiempo) && $tiempo->diferencia($penultimoPago) > 60*60*24 ){
+		if( $this->tiempoEsperaMedioCumplido($tiempo) && ( $tiempo->diferencia($penultimoPago) > 60*60*24 ||$penultimoPago== NULL ) ){
 		   $caso = 'Medio Boleto Universitario';
 		   $valor = $this->getCostoMedioBoleto();
         }

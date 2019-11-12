@@ -199,7 +199,12 @@ class Tarjeta implements TarjetaInterface {
      * @return bool
      *      Devuelve true si no se excedió el tiempo y false en caso contrario
      */
-    public function tiempoTransbordoTranscurrido( $tiempo ) { 
+    public function tiempoTransbordoTranscurrido( $tiempo ) {
+		
+		if($this->getUltimoPago() == NULL){
+				return False;
+		}
+			
 		if ( $this->trasbordoEspecial( $tiempo ) ) {
 			return ( $tiempo->getTiempo() - $this->getUltimoPago() < 5400 ); /// hora  y media
 		}

@@ -18,6 +18,6 @@ class Boleto_Test extends TestCase {
         $colectivo = new Colectivo( 'mixta','103', 420 );
 		
         $boleto = $tarjeta->pagarConTarjeta($colectivo , $tiempo_prueba);
-        $this->assertEquals( $boleto->getTarjeta()->getCostoUltimoViaje(), 0.0  );
+        $this->assertEquals( $boleto->getValor() , 0.0  );
     }
 }
