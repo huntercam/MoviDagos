@@ -5,11 +5,8 @@ namespace TrabajoTarjeta;
 class Tarjeta_Medio_Boleto_Universitario extends Tarjeta_Medio_Boleto {
 use Costos;
 
-    public $tipo = 'Medio Universitario';
 	
 	protected $penultimoPago = NULL;
-
-    
 
     /**
      * Usa la tarjeta para pagar un viaje en un colectivo determinado
@@ -25,7 +22,7 @@ use Costos;
         
 		$caso = 'Normal';
 		
-		if( $this->tiempoEsperaMedioCumplido($tiempo) && ( $tiempo->diferencia($penultimoPago) > 60*60*24 ||$penultimoPago== NULL ) ){
+		if( $this->tiempoEsperaMedioCumplido($tiempo) && ( $tiempo->diferencia($penultimoPago) > 60*60*24 || $penultimoPago == NULL ) ){
 		   $caso = 'Medio Boleto Universitario';
 		   $valor = $this->getCostoMedioBoleto();
         }

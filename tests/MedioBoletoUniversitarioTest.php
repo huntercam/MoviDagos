@@ -28,7 +28,7 @@ use Costos;
 		
         $tiempo->avanzar( 7200 );
         $boleto = $medio_boleto->pagarConTarjeta( $colectivo , $tiempo );
-        $this->assertEquals( $boleto->getValor(), $this->getCostoViaje() );
+        $this->assertEquals( $boleto->getValor(), $this->getCostoMedioBoleto() );
     }
 
     /**
