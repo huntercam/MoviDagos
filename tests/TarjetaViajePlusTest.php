@@ -15,8 +15,10 @@ class Tarjeta_Viaje_Plus_Test extends TestCase {
         $tiempo_prueba = new Tiempo();
         $tarjeta = new Tarjeta( $tiempo_prueba, NULL );
 		$colectivo = new Colectivo('mixta', '103', 420 );
-        $this->assertEquals($colectivo->pagar_con( $tarjeta ), new Boleto( $colectivo, $tarjeta ) );
-        $this->assertEquals( $colectivo->pagar_con( $tarjeta ), new Boleto( $colectivo, $tarjeta ) );
+		
+		$boleto = $tarjeta->pagarConTarjeta( $colectivo , $tiempo_prueba );
+		
+        $this->assertFalse( $boleto->getTipoBoleto() == 'Saldo Insuficiente' );
 
 	 }
 	/**
@@ -28,11 +30,15 @@ class Tarjeta_Viaje_Plus_Test extends TestCase {
         $tiempo_prueba = new Tiempo();
         $tarjeta = new Tarjeta( $tiempo_prueba, NULL );
 		$colectivo = new Colectivo( 'mixta', '103', 420 );
-        $colectivo->pagar_con( $tarjeta );
-        $this->assertEquals( $tarjeta->obtener_plus(), 1 );
-        $colectivo->pagar_con( $tarjeta );
-        $this->assertEquals( $tarjeta->obtener_plus(), 0 );
-        $this->assertEquals( $colectivo->pagar_con( $tarjeta ), False );
+		
+        $tarjeta->pagarConTarjeta( $colectivo , $tiempo_prueba );
+        $this->assertEquals( $tarjeta->getViajesPlus(), 1 );
+		
+        $tarjeta->pagarConTarjeta( $colectivo , $tiempo_prueba );
+        $this->assertEquals( $tarjeta->getViajesPlus(), 0 );
+		
+		$boleto = $tarjeta->pagarConTarjeta( $colectivo , $tiempo_prueba );
+        $this->assertEquals( $boleto->getTipoBoleto() == 'Saldo Insuficiente' , True );
 
 	}
 

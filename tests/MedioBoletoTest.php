@@ -14,11 +14,11 @@ use Costos;
     public function test_pagar_monto_estandar() {
         $tiempo = new Tiempo_Falso();
         $tiempo->avanzar( 36000 );
-        $medio_boleto = new Tarjeta_Medio_Boleto( $tiempo, null );
+        $medio_boleto = new Tarjeta_Medio_Boleto( Null );
         $colectivo = new Colectivo( 'mixta', '133', 420 );
         $medio_boleto->recargar( 50.0 );
-        $this->assertEquals( $medio_boleto->pagar_tarjeta( $colectivo ), True );
-        $this->assertEquals( $medio_boleto->obtener_costo(), 7.4 );
+		$boleto = $medio_boleto->pagarConTarjeta( $colectivo , $tiempo );
+        $this->assertEquals( $boleto->getValor(), $this->getCostoMedioBoleto() );
     }
     
     /**
@@ -29,13 +29,13 @@ use Costos;
     public function test_pagar_monto_viaje_plus_simple() {
         $tiempo = new Tiempo_Falso();
         $tiempo->avanzar( 36000 );
-        $medio_boleto = new Tarjeta_Medio_Boleto( $tiempo, null );
+        $medio_boleto = new Tarjeta_Medio_Boleto( Null );
         $colectivo = new Colectivo( 'mixta', '133', 420 );
         $medio_boleto->recargar( 50.0 );
-        $medio_boleto->gastar_plus();
-        $this->assertEquals( $medio_boleto->obtener_plus(), 1 );
-        $medio_boleto->pagar_tarjeta( $colectivo );
-        $this->assertEquals( $medio_boleto->obtener_costo(), ( 22.2 ) );
+        $medio_boleto->gastarPlus();
+        $this->assertEquals( $medio_boleto->getTarjeta()->getViajesPlus(), 1 );
+        $boleto = $medio_boleto->pagarConTarjeta( $colectivo , $tiempo );
+        $this->assertEquals( $boleto->getValor(), $this->getCostoMedioBoleto() + $this->getCostoViaje() );
     }
     
     /**
@@ -46,14 +46,14 @@ use Costos;
     public function test_pagar_monto_viaje_plus_doble() {
         $tiempo = new Tiempo_Falso();
         $tiempo->avanzar( 36000 );
-        $medio_boleto = new Tarjeta_Medio_Boleto( $tiempo, null );;
+        $medio_boleto = new Tarjeta_Medio_Boleto( Null );
         $colectivo = new Colectivo( 'mixta', '133', 420 );
         $medio_boleto->recargar( 50.0 );
-        $medio_boleto->gastar_plus();
-        $medio_boleto->gastar_plus();
-        $this->assertEquals( $medio_boleto->obtener_plus(), 0 );
-        $medio_boleto->pagar_tarjeta( $colectivo );
-        $this->assertEquals( $medio_boleto->obtener_costo(), ( 37.0 ) );
+        $medio_boleto->gastarPlus();
+        $medio_boleto->gastarPlus();
+        $this->assertEquals( $medio_boleto->getViajesPlus(), 0 );
+        $boleto = $medio_boleto->pagarConTarjeta( $colectivo , $tiempo );
+        $this->assertEquals( $boleto->getValor(), $this->getCostoMedioBoleto() + (2 * $this->getCostoViaje() ) );
     }
 
     /**
@@ -65,14 +65,13 @@ use Costos;
     public function test_medio_boleto_tiempo() {
         $tiempo = new Tiempo_Falso();
         $tiempo->avanzar( 36000 );
-        $medio_boleto = new Tarjeta_Medio_Boleto( $tiempo, null );
+        $medio_boleto = new Tarjeta_Medio_Boleto( Null );
         $medio_boleto->recargar( 50.0 );
         $colectivo = new Colectivo( 'mixta', '133', 420 );
-        $medio_boleto->pagar_tarjeta( $colectivo );
+        $boleto = $medio_boleto->pagarConTarjeta( $colectivo , $tiempo );
         $tiempo->avanzar( 240 );
-        $medio_boleto->pagar_tarjeta( $colectivo );
-        $this->assertEquals( $medio_boleto->pagar_tarjeta( $colectivo ), true );
-        $this->assertEquals( $medio_boleto->obtener_costo(), 14.80 );
+        $boleto2 = $medio_boleto->pagarConTarjeta( $colectivo , $tiempo );
+        $this->assertEquals( $boleto2->getValor(), $this->getCostoViaje() );
     }
     
     /**
@@ -83,15 +82,19 @@ use Costos;
     public function test_medio_boleto_viaje_plus(){
         $tiempo = new Tiempo_Falso();
         $tiempo->avanzar(36000);
-        $medio_boleto = new Tarjeta_Medio_Boleto( $tiempo, null );
+        $medio_boleto = new Tarjeta_Medio_Boleto( Null );
         $colectivo = new Colectivo( 'mixta', '133', 420 );
-        $this->assertEquals( $medio_boleto->obtener_plus(), 2 );
-        $medio_boleto->pagar_tarjeta( $colectivo );
-        $this->assertEquals( $medio_boleto->obtener_plus(), 1 );
-        $medio_boleto->gastar_plus();
-        $this->assertEquals( $medio_boleto->obtener_plus(), 0 );
-        $medio_boleto->pagar_tarjeta( $colectivo );
-        $this->assertEquals( $medio_boleto->pagar_tarjeta( $colectivo ), false );
+		
+        $this->assertEquals( $medio_boleto->getViajesPlus(), 2 );
+		
+        $medio_boleto->pagarConTarjeta( $colectivo , $tiempo );
+        $this->assertEquals( $medio_boleto->getViajesPlus(), 1 );
+		
+        $medio_boleto->gastarPlus();
+        $this->assertEquals( $medio_boleto->getViajesPlus(), 0 );
+		
+        $boleto = $medio_boleto->pagarConTarjeta( $colectivo , $tiempo );
+        $this->assertEquals( $boleto->getTipoBoleto(), 'Saldo Insuficiente' );
     }
 
     /**
@@ -102,15 +105,18 @@ use Costos;
     public function test_medio_boleto_trasbordo_normal(){
         $tiempo = new Tiempo_Falso();
         $tiempo->avanzar(36000);
-        $medio_boleto = new Tarjeta_Medio_Boleto( $tiempo, null );
+        $medio_boleto = new Tarjeta_Medio_Boleto( Null );
         $colectivo = new Colectivo( 'mixta', '133', 420 );
         $colectivo2 = new Colectivo( 'mixta', '102', 421 );
+		
         $medio_boleto->recargar( 50.0 );
-        $medio_boleto->pagar_tarjeta( $colectivo );
-        $this->assertEquals( $medio_boleto->obtener_costo(), $this->getCostoMedioBoleto() );
+        $boleto = $medio_boleto->pagarConTarjeta( $colectivo , $tiempo );
+		
+        $this->assertEquals( $boleto->getValor() , $this->getCostoMedioBoleto() );
+		
         $tiempo->avanzar( 300 );
-        $medio_boleto->pagar_tarjeta( $colectivo2 );
-        $this->assertEquals( $medio_boleto->obtener_costo(), 0.0 );
+        $boleto = $medio_boleto->pagarConTarjeta( $colectivo , $tiempo );
+        $this->assertEquals( $boleto->getValor(), $this->getCostoTransbordo() );
     }
 
     /**
@@ -121,16 +127,20 @@ use Costos;
     public function test_medio_boleto_trasbordo_CUVP(){
         $tiempo = new Tiempo_Falso();
         $tiempo->avanzar( 36000 );
-        $medio_boleto = new Tarjeta_Medio_Boleto( $tiempo, null );
+        $medio_boleto = new Tarjeta_Medio_Boleto( Null );
         $colectivo = new Colectivo( 'mixta', '133', 420 );
         $colectivo2 = new Colectivo( 'mixta', '102', 421 );
+		
         $medio_boleto->recargar( 50.0 );
-        $medio_boleto->pagar_tarjeta( $colectivo );
-        $this->assertEquals( $medio_boleto->obtener_costo(), $this->getCostoMedioBoleto() );
-        $medio_boleto->gastar_plus();
+        $boleto = $medio_boleto->pagarConTarjeta( $colectivo , $tiempo );
+		
+        $this->assertEquals( $boleto->getValor(), $this->getCostoMedioBoleto() );
+        $medio_boleto->gastarPlus();
+		
         $tiempo->avanzar( 300 );
-        $medio_boleto->pagar_tarjeta( $colectivo2 );
-        $this->assertEquals( $medio_boleto->obtener_costo(), $this->getCostoViaje() );
+        $boleto = $medio_boleto->pagarConTarjeta( $colectivo , $tiempo );
+		
+        $this->assertEquals( $boleto->getValor(), $this->getCostoViaje() );
     }
 
     /**
@@ -141,16 +151,19 @@ use Costos;
     public function test_medio_boleto_trasbordo_plus(){
         $tiempo = new Tiempo_Falso();
         $tiempo->avanzar( 36000 );
-        $medio_boleto = new Tarjeta_Medio_Boleto( $tiempo, null );
+        $medio_boleto = new Tarjeta_Medio_Boleto( Null );
         $colectivo = new Colectivo( 'mixta', '133', 420 );
         $colectivo2 = new Colectivo( 'mixta', '102', 421 );
         $medio_boleto->recargar( 50.0 );
-        $medio_boleto->pagar_tarjeta( $colectivo );
-        $this->assertEquals( $medio_boleto->obtener_costo(), $this->getCostoMedioBoleto() );
-        $medio_boleto->gastar_plus();
-        $medio_boleto->gastar_plus();
+		
+        $boleto = $medio_boleto->pagarConTarjeta( $colectivo , $tiempo );
+        $this->assertEquals( $boleto->getValor(), $this->getCostoMedioBoleto() );
+		
+        $medio_boleto->gastarPlus();
+        $medio_boleto->gastarPlus();
         $tiempo->avanzar( 300 );
-        $medio_boleto->pagar_tarjeta( $colectivo2 );
-        $this->assertEquals( $medio_boleto->obtener_costo(), $this->getCostoViaje()*2 );
+		
+        $boleto = $medio_boleto->pagarConTarjeta( $colectivo , $tiempo );
+        $this->assertEquals( $boleto->getValor(), $this->getCostoViaje()*2 );
     }
 }

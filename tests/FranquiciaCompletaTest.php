@@ -16,7 +16,7 @@ class Franquicia_Completa_Test extends TestCase {
         $franquicia_completa = new Tarjeta_Franquicia_Completa ( Null );
         $colectivo = new Colectivo( 'mixta', '103', 420 );
 		$boleto = $tarjeta->pagarConTarjeta( $colectivo , $tiempo );
-        $this->assertEquals( $franquicia_completa->getSaldo() , ( 0.0 ) );
+        $this->assertEquals( $franquicia_completa->getSaldo() ,  0.0  );
     }
     
 }
