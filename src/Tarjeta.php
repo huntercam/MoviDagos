@@ -77,13 +77,12 @@ class Tarjeta implements TarjetaInterface {
      * @return Boleto
      *      Devuelve un boleto con el viaje efectuado
      */
-    public function pagarConTarjeta( $colectivo , $tiempo ) {
+    public function pagarConTarjeta( ColectivoInterface $colectivo , $tiempo ) {
         $valor = $this->getCostoViaje();
         
-        $this->trasbordo = false;
-        
-		$caso = '';
-        if( $this->hayTransbordo( $colectivo ) ){
+		$caso = 'Normal';
+		
+        if( $this->hayTransbordo( $colectivo , $tiempo ) ){
 		   $caso = 'Transbordo';
 		   $valor = $this->getCostoTransbordo();
         }
@@ -93,19 +92,19 @@ class Tarjeta implements TarjetaInterface {
 			
             switch ( $this->getViajesPlus() ) {
                 case 0:
-                    return new Boleto($colectivo, $this, 'Saldo Insuficiente' , $tiempo );
+                    return new Boleto($colectivo, $this, $valor,  'Saldo Insuficiente' , $tiempo );
                 case 1:
                     $this->gastarPlus();
                     $this->costo = 0.0;
 					$this->setUltimoPago( $tiempo );
                     $this->setUltimoColectivo( $colectivo );
-                    return new Boleto($colectivo, $this, 'Viaje Plus' , $tiempo );
+                    return new Boleto($colectivo, $this, $this->costo, 'Viaje Plus' , $tiempo );
                 case 2:
                     $this->gastarPlus();
                     $this->costo = 0.0;
 					$this->setUltimoPago( $tiempo );
                     $this->setUltimoColectivo( $colectivo );
-                    return new Boleto($colectivo, $this, 'Viaje Plus' , $tiempo );
+                    return new Boleto($colectivo, $this, $this->costo, 'Viaje Plus' , $tiempo );
             }
         } else { /// lo pagas
 
@@ -120,7 +119,7 @@ class Tarjeta implements TarjetaInterface {
 			$this->viajesPlus = 2;
             $this->setUltimoPago( $tiempo );
             $this->setUltimoColectivo( $colectivo );
-            return new Boleto($colectivo, $this, $caso , $tiempo );
+            return new Boleto($colectivo, $this, $valor, $caso , $tiempo );
         
         }
     }
@@ -169,7 +168,7 @@ class Tarjeta implements TarjetaInterface {
      * 
      * @return int
      */
-    public function getUltimoUso() {
+    public function getUltimoPago() {
         return $this->ultimoPago;
     }
 
@@ -180,8 +179,8 @@ class Tarjeta implements TarjetaInterface {
      * @return bool
      *      Devuelve true si se puede usar trasbordo y false en caso contrario
      */
-    public function hayTransbordo( $colectivo ) {
-		return ( $this->EsOtroColectivo( $colectivo ) && $this->tiempoTransbordoTranscurrido() );
+    public function hayTransbordo( ColectivoInterface $colectivo , $tiempo ) {
+		return ( $this->EsOtroColectivo( $colectivo ) && $this->tiempoTransbordoTranscurrido( $tiempo ) );
     }
 
     /**
@@ -190,7 +189,7 @@ class Tarjeta implements TarjetaInterface {
      * @return bool
      *      Devuelve true si se esta usando un colectivo diferente y false en caso contrario 
      */
-	public function EsOtroColectivo( $colectivo ) {	
+	public function EsOtroColectivo( ColectivoInterface $colectivo ) {	
 		return ( ( $this->lineaAnterior != $colectivo->linea() ) || ( $this->numeroAnterior != $colectivo->numero() ) );
     }
 
@@ -200,11 +199,11 @@ class Tarjeta implements TarjetaInterface {
      * @return bool
      *      Devuelve true si no se excedió el tiempo y false en caso contrario
      */
-    public function tiempoTransbordoTranscurrido() { 
-		if ( $this->trasbordoEspecial() ) {
-			return ( $this->tiempo - $this->ultimo_pago < 5400 ); /// hora  y media
+    public function tiempoTransbordoTranscurrido( $tiempo ) { 
+		if ( $this->trasbordoEspecial( $tiempo ) ) {
+			return ( $tiempo->getTiempo() - $this->getUltimoPago() < 5400 ); /// hora  y media
 		}
-		return ( $this->tiempo - $this->ultimo_pago < 3600 ); /// hora
+		return ( $tiempo->getTiempo() - $this->getUltimoPago() < 3600 ); /// hora
     }
 
     /**
@@ -213,11 +212,11 @@ class Tarjeta implements TarjetaInterface {
      * @return bool
      *      Devuelve true si se usa el intervalo mayor y false en caso contrario
      */
-    public function trasbordoEspecial() {
-        $feriado = $this->tiempo->feriado();
-		$sabado = $this->tiempo->diaDeSemana() == 6 &&  $this->tiempo->dentroDeHoras(14,22);
-		$domingo = $this->tiempo->diaDeSemana() == 0 && $this->tiempo->dentroDeHoras(6,22);
-		$noche = $this->tiempo->dentroDeHoras(22,24) || $this->tiempo->dentroDeHoras(0,6); 
+    public function trasbordoEspecial( $tiempo ) {
+        $feriado = $tiempo->feriado();
+		$sabado = $tiempo->diaDeSemana() == 6 &&  $tiempo->dentroDeHoras(14,22);
+		$domingo = $tiempo->diaDeSemana() == 0 && $tiempo->dentroDeHoras(6,22);
+		$noche = $tiempo->dentroDeHoras(22,24) || $tiempo->dentroDeHoras(0,6); 
 		return ($sabado || $domingo || $noche || $feriado);
     }
 
@@ -226,13 +225,13 @@ class Tarjeta implements TarjetaInterface {
      * 
      * @return void
      */
-    public function setUltimoColectivo ( $colectivo ) {
+    public function setUltimoColectivo ( ColectivoInterface $colectivo ) {
         $this->lineaAnterior = $colectivo->linea();
 		$this->numeroAnterior = $colectivo->numero();
     }
 	
 	public function setUltimoPago ( $tiempo ) {
-        $this->ultimoPago = $tiempo;
+        $this->ultimoPago = $tiempo->getTiempo();
     }
 
 }

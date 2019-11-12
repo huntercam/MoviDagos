@@ -28,11 +28,12 @@ class Boleto implements BoletoInterface {
      * 
      * @return void
      */
-    public function __construct( $p_colectivo, TarjetaInterface $p_tarjeta , $p_tipoBoleto , $p_tiempo  ) {
+    public function __construct( ColectivoInterface $p_colectivo, TarjetaInterface $p_tarjeta, $p_valor , $p_tipoBoleto , Tiempo $p_tiempo  ) {
 		$tarjeta = $p_tarjeta;
 		$colectivo = $p_colectivo;
 		$tipoBoleto = $p_tipoBoleto;
 		$tiempo = $p_tiempo;
+		$valor = $p_valor;
     }
 
     /**

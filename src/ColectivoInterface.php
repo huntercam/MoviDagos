@@ -2,7 +2,7 @@
 
 namespace TrabajoTarjeta;
 
-interface Colectivo_Interface {
+interface ColectivoInterface {
 
     /**
      * Devuelve el nombre de la linea. Ejemplo '142 Negro'

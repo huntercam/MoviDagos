@@ -35,6 +35,17 @@ class Tiempo {
     public function avanzar( $segundos ) {
         $this->tiempo += $segundos;
     }
+	
+	public function diferencia( $tiempo2 ) {
+		$rta = $this->tiempo - $tiempo2;
+			if($rta > 0)
+				return $rta;
+			
+        return -$rta;
+    }
+	public function getTiempo(){
+		return $this->tiempo;
+	}
 
 
 

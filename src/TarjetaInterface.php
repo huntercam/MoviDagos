@@ -44,7 +44,7 @@ interface TarjetaInterface {
      * @return bool
      *      Devuelve true si se pudo pagar el viaje y false en caso contrario
      */
-    public function pagarConTarjeta( $colectivo , $tiempo);
+    public function pagarConTarjeta( ColectivoInterface $colectivo , $tiempo);
     
     /**
      * Reduce la cantidad de viajes plus de la tarjeta en uno
@@ -82,6 +82,6 @@ interface TarjetaInterface {
      * 
      * @return float 
      */
-    public function hayTransbordo( $colectivo );
+    public function hayTransbordo( ColectivoInterface $colectivo );
 
 }
