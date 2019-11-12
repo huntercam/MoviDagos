@@ -18,7 +18,7 @@ use Costos;
         $colectivo = new Colectivo( 'mixta', '103', 420 );
         $tarjeta->recargar( 20.0 );
         $boleto = $tarjeta->pagarConTarjeta( $colectivo , $tiempo_prueba );
-        $this->assertEquals( $boleto->getTarjeta()->getCostoUltimoViaje(), $this->getCostoViaje() );
+        $this->assertEquals( $boleto->getValor(), $this->getCostoViaje() );
         $this->assertEquals( $boleto->getTarjeta()->getSaldo(), 20.0 - $this->getCostoViaje() );
         $this->assertEquals( $boleto->getTarjeta()->getId(), NULL );
         $this->assertEquals( $boleto->getColectivo()->linea(), '103' );

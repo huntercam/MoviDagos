@@ -109,7 +109,7 @@ class Tarjeta implements TarjetaInterface {
         } else { /// lo pagas
 
             $this->costo = $valor;
-            $this->saldo -= $this->costo;
+            $this->saldo -= $valor;
             
 
             if($this->getViajesPlus() != 2){
