@@ -56,15 +56,15 @@ class Tiempo {
      *      Devuelve true si es un feriado y false en caso contrario
      */
     public function feriado() {
-        $fecha = date( 'd-m', $this->tiempo );
+        $fecha = date( 'd-m', $this->getTiempo() );
         return in_array( $fecha, $this->feriados );
     }
 	
 	public function diaDeSemana(){
-		return  date( 'w', $this->tiempo );
+		return  date( 'w', $this->getTiempo() );
 	}
 	
 	public function dentroDeHoras($horainicial, $horafinal){
-		return  ( date( 'G', $this->tiempo->time() ) >= $horainicial && date( 'G', $this->tiempo->time() ) < $horafinal );
+		return  ( date( 'G', $this->getTiempo() ) >= $horainicial && date( 'G', $this->getTiempo() ) < $horafinal );
 	}
 }
