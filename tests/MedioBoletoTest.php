@@ -33,7 +33,7 @@ use Costos;
         $colectivo = new Colectivo( 'mixta', '133', 420 );
         $medio_boleto->recargar( 50.0 );
         $medio_boleto->gastarPlus();
-        $this->assertEquals( $medio_boleto->getTarjeta()->getViajesPlus(), 1 );
+        $this->assertEquals( $medio_boleto->getViajesPlus(), 1 );
         $boleto = $medio_boleto->pagarConTarjeta( $colectivo , $tiempo );
         $this->assertEquals( $boleto->getValor(), $this->getCostoMedioBoleto() + $this->getCostoViaje() );
     }
