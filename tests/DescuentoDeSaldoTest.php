@@ -2,6 +2,7 @@
 namespace TrabajoTarjeta;
 use PHPUnit\Framework\TestCase;
 class DescuentodesaldoTest extends TestCase {
+	use Costos;
     /**
      * Comprueba que se descuente un viaje plus del saldo.
      * 
@@ -10,7 +11,7 @@ class DescuentodesaldoTest extends TestCase {
      
     public function test_descuento_de_un_plus() {
         $tiempo_prueba = new Tiempo();
-        $tarjeta = new Tarjeta( $tiempo_prueba, NULL );
+        $tarjeta = new Tarjeta( NULL );
         $cole= new Colectivo( 'mixta','103',420 );        
         $tarjeta->recargar( 100.0 );
         $tarjeta->gastar_plus();
@@ -26,7 +27,7 @@ class DescuentodesaldoTest extends TestCase {
      */
     public function test_descuento_de_dos_plus() {
         $tiempo_prueba = new Tiempo();
-        $tarjeta = new Tarjeta( $tiempo_prueba, NULL );
+        $tarjeta = new Tarjeta(  NULL );
         $cole= new Colectivo( 'mixta', '103', 420 );
         $tarjeta->recargar( 100.0 );
         $tarjeta->gastar_plus();
