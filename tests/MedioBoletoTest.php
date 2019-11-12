@@ -5,7 +5,7 @@ namespace TrabajoTarjeta;
 use PHPUnit\Framework\TestCase;
 
 class medio_boletoTest extends TestCase {
-use Pagos;
+use Costos;
     /**
      * Comprueba que el medio boleto page la mitad que una tarjeta normal en un pago estandar.
      * 

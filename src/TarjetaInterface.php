@@ -2,7 +2,13 @@
 
 namespace TrabajoTarjeta;
 
-interface Tarjeta_Interface {
+require('Costos.php');
+
+
+
+
+
+interface TarjetaInterface {
 
     /**
      * Recarga una tarjeta con un cierto valor de dinero.
@@ -20,14 +26,14 @@ interface Tarjeta_Interface {
      *
      * @return float
      */
-    public function obtener_saldo();
+    public function getSaldo();
 
     /**
      * Devuelve la cantidad de viajes plus que le quedan a la tarjeta
      * 
      * @return int
      */
-    public function obtener_plus();
+    public function getViajesPlus();
     
     /**
      * Usa la tarjeta para pagar un viaje en un colectivo determinado
@@ -38,28 +44,22 @@ interface Tarjeta_Interface {
      * @return bool
      *      Devuelve true si se pudo pagar el viaje y false en caso contrario
      */
-    public function pagar_tarjeta( $colectivo );
+    public function pagarConTarjeta( $colectivo , $tiempo);
     
     /**
      * Reduce la cantidad de viajes plus de la tarjeta en uno
      * 
      * @return void
      */
-    public function gastar_plus();
+    public function gastarPlus();
 
-    /**
-     * Devuelve el valor de pagar un viaje con la tarjeta
-     * 
-     * @return float
-     */
-    public function obtener_valor();
     
     /**
      * Devuelve el costo del ultimo viaje pagado con la tarjeta
      * 
      * @return float
      */
-    public function obtener_costo();
+    public function getCostoUltimoViaje();
 
 
     /**
@@ -67,27 +67,21 @@ interface Tarjeta_Interface {
      * 
      * @return int
      */
-    public function obtener_id();
+    public function getId();
 
-    /**
-     * Devuelve el costo de pagar los viajes plus que se deben en la tarjeta
-     * 
-     * @return float
-     */
-    public function obtener_costo_plus();
     
     /**
      * Devuelve el tipo de la tarjeta
      * 
      * @return string
      */
-    public function obtener_tipo();
+    public function getTipo();
 
     /**
      * Indica si el proximo viaje puede ser un trasbordo o no
      * 
      * @return float 
      */
-    public function es_trasbordo( $colectivo );
+    public function hayTransbordo( $colectivo );
 
 }

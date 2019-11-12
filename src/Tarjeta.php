@@ -1,37 +1,29 @@
 <?php
 
 namespace TrabajoTarjeta;
+require('TarjetaInterface.php');
 
-class Tarjeta implements Tarjeta_Interface {
 
+class Tarjeta implements TarjetaInterface {
+
+	use Costos;
+	
+	protected $id;
+	
     protected $saldo = 0;
 
-    protected $viajes_plus = 2;
-
-    protected $valor = 14.80;
+    protected $viajesPlus = 2;
 
     protected $costo;
 
-    protected $id;
+    protected $lineaAnterior = NULL;
 
-    protected $tipo = "Normal";
+    protected $numeroAnterior = NULL;
 
-    public $caso;
+    protected $ultimoPago = NULL;
 
-    protected $costo_plus = 0.0;
 
-    protected $tiempo;
-
-    protected $linea_anterior = NULL;
-
-    protected $numero_anterior = NULL;
-
-    protected $ultimo_pago = NULL;
-
-    protected $trasbordo = false;
-
-    public function __construct( Tiempo_Interface $tiempo, $id ) {
-        $this->tiempo = $tiempo;
+    public function __construct( $id ) {
         $this->id = $id;
     }
     
@@ -42,16 +34,16 @@ class Tarjeta implements Tarjeta_Interface {
      *      La cantidad de dinero a recargar
      */
     public function recargar( $monto ) {
-	  if( 10.0 == $monto  || 20.0 == $monto || 30.0 == $monto || 50.0 == $monto || 100.0 == $monto || 510.15 == $monto || 962.59 == $monto ) {
-		if( 0.0 == $this->saldo ) {
-			$this->saldo = $monto;
-		} else {
-	   		$this->saldo = $this->saldo + $monto;
-		}
+	  if( $monto == $this->getMontoPromo1() ) {
+			$this->saldo +=  $monto + $this->getMontoAdicionalPromo1() ;
 		return True;	    
-	  } else{
-	  	  return False;
 	  }
+	  if( $monto == $this->getMontoPromo2()) {
+			$this->saldo +=  $monto + $this->getMontoAdicionalPromo2();
+		return True;	    
+	  }
+		$this->saldo +=  $monto;
+		return True;
     }
 
     /**
@@ -59,7 +51,7 @@ class Tarjeta implements Tarjeta_Interface {
      *
      * @return float
      */
-    public function obtener_saldo() {
+    public function getSaldo() {
       return $this->saldo;
     }
     
@@ -68,8 +60,8 @@ class Tarjeta implements Tarjeta_Interface {
      * 
      * @return int
      */
-    public function obtener_plus() {
-        return $this->viajes_plus;
+    public function getViajesPlus() {
+        return $this->viajesPlus;
     }
     
     /**
@@ -77,108 +69,58 @@ class Tarjeta implements Tarjeta_Interface {
      * 
      * @param Colectivo_Interface $colectivo
      *      El colectivo en el cual se usa la tarjeta
+	 
+	 @param $tiempo
+     *      El tiempo en el cual se ejecuta el pago
      * 
-     * @return bool
-     *      Devuelve true si se pudo pagar el viaje y false en caso contrario
+     * @return Boleto
+     *      Devuelve un boleto con el viaje efectuado
      */
-    public function pagar_tarjeta( $colectivo ) {
-        $this->valor = 14.80;
-        $this->costo_plus = 0.0;
-        if ( $this->saldo < $this->valor ) {
-            switch ( $this->viajes_plus ) {
-                case 0:
-                    return false;
-                case 1:
-                    $this->gastar_plus();
-                    $this->costo = 0.0;
-                    $this->caso = 'Viaje Plus';
-                    $this->guardo_cole( $colectivo );
-                    $this->trasbordo = true;
-                    return true;
-                case 2:
-                    $this->gastar_plus();
-                    $this->costo = 0.0;
-                    $this->caso = 'Viaje Plus';
-                    $this->guardo_cole( $colectivo );
-                    $this->trasbordo = true;
-                    return true;
-            }
-        } else {
-            switch ( $this->viajes_plus ) {
-                case 0:
-                    $this->costo_plus = ( $this->valor ) * 2;
-                    $this->costo = $this->costo_plus + $this->valor;
-                    if ( $this->saldo < $this->costo ) {
-                        return false;
-                    } else {
-                        if ( $this->hay_trans( $colectivo ) ) {
-                            $this->valor = ( $this->valor / 33 ) * 10;
-                            $this->costo = $this->costo_plus + $this->valor;
-                            $this->saldo = $this->saldo - $this->costo;
-                            $this->caso = 'Trasbordo';
-                            $this->ultimo_pago = $this->tiempo->time();
-                            $this->guardo_cole( $colectivo );
-                            $this->trasbordo = false;
-                            $this->viajes_plus = 2;
-                            return true;
-                        } else {
-                            $this->saldo = $this->saldo - $this->costo;
-                            $this->caso = 'Pagando Plus';
-                            $this->ultimo_pago = $this->tiempo->time();
-                            $this->guardo_cole( $colectivo );
-                            $this->trasbordo = true;
-                            $this->viajes_plus = 2;
-                            return true;
-                        }
-                    }
+    public function pagarConTarjeta( $colectivo , $tiempo ) {
+        $valor = $this->getCostoViaje();
+        
+        $this->trasbordo = false;
+        
+		$caso = '';
+        if( $this->hayTransbordo( $colectivo ) ){
+		   $caso = 'Transbordo';
+		   $valor = $this->getCostoTransbordo();
+        }
+        $valor +=  ( (2 - $this->getViajesPlus() ) * $this->getCostoViaje() );
 
+        if ( $valor > $this->getSaldo() ) { /// si no te alcanza la plata
+			
+            switch ( $this->getViajesPlus() ) {
+                case 0:
+                    return new Boleto($colectivo, $this, 'Saldo Insuficiente' , $tiempo );
                 case 1:
-                    $this->costo_plus = $this->valor;
-                    $this->costo = $this->costo_plus + $this->valor;
-                    if ( $this->saldo < $this->costo ) {
-                        return false;
-                    } else {
-                        if ( $this->hay_trans( $colectivo ) ) {
-                            $this->valor = ( $this->valor / 33 ) * 10;
-                            $this->costo = $this->costo_plus + $this->valor;
-                            $this->saldo = $this->saldo - $this->costo;
-                            $this->caso = 'Trasbordo';
-                            $this->ultimo_pago = $this->tiempo->time();
-                            $this->guardo_cole( $colectivo );
-                            $this->trasbordo = false;
-                            $this->viajes_plus = 2;
-                            return true;
-                        } else {
-                            $this->saldo = $this->saldo - $this->costo;
-                            $this->caso = 'Pagando Plus';
-                            $this->ultimo_pago = $this->tiempo->time();
-                            $this->guardo_cole( $colectivo );
-                            $this->trasbordo = true;
-                            $this->viajes_plus = 2;
-                            return true;
-                        }
-                    }
+                    $this->gastarPlus();
+                    $this->costo = 0.0;
+					$this->setUltimoPago( $tiempo );
+                    $this->setUltimoColectivo( $colectivo );
+                    return new Boleto($colectivo, $this, 'Viaje Plus' , $tiempo );
                 case 2:
-                    if ($this->hay_trans( $colectivo ) ) { 
-                        $this->valor = ( $this->valor / 33 ) * 10;
-                        $this->costo = $this->costo_plus + $this->valor;
-                        $this->saldo = $this->saldo - $this->costo;
-                        $this->caso = 'Trasbordo';
-                        $this->ultimo_pago = $this->tiempo->time();
-                        $this->guardo_cole( $colectivo );
-                        $this->trasbordo = false;
-                        return true;
-                    } else {
-                        $this->valor = 14.80;
-                        $this->costo = $this->costo_plus + $this->valor;
-                        $this->saldo = $this->saldo - $this->costo;
-                        $this->caso = 'Normal';
-                        $this->ultimo_pago = $this->tiempo->time();
-                        $this->guardo_cole( $colectivo );
-                        $this->trasbordo = true;
-                        return true;
-                    }    
+                    $this->gastarPlus();
+                    $this->costo = 0.0;
+					$this->setUltimoPago( $tiempo );
+                    $this->setUltimoColectivo( $colectivo );
+                    return new Boleto($colectivo, $this, 'Viaje Plus' , $tiempo );
             }
+        } else { /// lo pagas
+
+            $this->costo = $valor;
+            $this->saldo -= $this->costo;
+            
+
+            if($this->getViajesPlus() != 2){
+            	$caso = 'Pagando Plus';
+            }
+            
+			$this->viajesPlus = 2;
+            $this->setUltimoPago( $tiempo );
+            $this->setUltimoColectivo( $colectivo );
+            return new Boleto($colectivo, $this, $caso , $tiempo );
+        
         }
     }
     
@@ -187,7 +129,7 @@ class Tarjeta implements Tarjeta_Interface {
      * 
      * @return float
      */
-    public function obtener_costo() {
+    public function getCostoUltimoViaje() {
         return $this->costo;
         
     }
@@ -197,43 +139,27 @@ class Tarjeta implements Tarjeta_Interface {
      * 
      * @return void
      */
-    public function gastar_Plus() {
-        $this->viajes_plus = $this->viajes_plus - 1;
+    public function gastarPlus() {
+        $this->viajesPlus -=  1;
     }
     
-    /**
-     * Devuelve el valor de pagar un viaje con la tarjeta
-     * 
-     * @return float
-     */
-    public function obtener_valor() {
-        return $this->valor; 
-    }
 
     /**
      * Devuelve el id de la tarjeta
      * 
      * @return int
      */
-    public function obtener_id() {
+    public function getId() {
         return $this->id;
     }
 
-    /**
-     * Devuelve el costo de pagar los viajes plus que se deben en la tarjeta
-     * 
-     * @return float
-     */
-    public function obtener_costo_plus() {
-        return $this->costo_plus;
-    }
 
     /**
      * Devuelve el tipo de la tarjeta
      * 
      * @return string
      */
-    public function obtener_tipo(): string {
+    public function getTipo(): string {
         return $this->tipo;
     }
 
@@ -242,7 +168,7 @@ class Tarjeta implements Tarjeta_Interface {
      * 
      * @return int
      */
-    public function obtener_hora() {
+    public function getUltimoUso() {
         return $this->ultimo_pago;
     }
 
@@ -253,8 +179,8 @@ class Tarjeta implements Tarjeta_Interface {
      * @return bool
      *      Devuelve true si se puede usar trasbordo y false en caso contrario
      */
-    public function hay_trans( $colectivo ) {
-		return ( $this->es_trasbordo( $colectivo ) && $this->tiempo_valido() && $this->trasbordo );
+    public function hayTransbordo( $colectivo ) {
+		return ( $this->EsOtroColectivo( $colectivo ) && $this->tiempoTransbordoTranscurrido() );
     }
 
     /**
@@ -263,7 +189,7 @@ class Tarjeta implements Tarjeta_Interface {
      * @return bool
      *      Devuelve true si se esta usando un colectivo diferente y false en caso contrario 
      */
-	public function es_trasbordo( $colectivo ) {	
+	public function EsOtroColectivo( $colectivo ) {	
 		return ( ( $this->linea_anterior != $colectivo->linea() ) || ( $this->numero_anterior != $colectivo->numero() ) );
     }
 
@@ -273,11 +199,11 @@ class Tarjeta implements Tarjeta_Interface {
      * @return bool
      *      Devuelve true si no se excedió el tiempo y false en caso contrario
      */
-    public function tiempo_valido() { 
-		if ( $this->intervalo_trasbordo() ) {
-			return ( $this->tiempo->time() - $this->ultimo_pago < 5400 );
+    public function tiempoTransbordoTranscurrido() { 
+		if ( $this->trasbordoEspecial() ) {
+			return ( $this->tiempo - $this->ultimo_pago < 5400 ); /// hora  y media
 		}
-		return ( $this->tiempo->time() - $this->ultimo_pago < 3600 );
+		return ( $this->tiempo - $this->ultimo_pago < 3600 ); /// hora
     }
 
     /**
@@ -286,11 +212,11 @@ class Tarjeta implements Tarjeta_Interface {
      * @return bool
      *      Devuelve true si se usa el intervalo mayor y false en caso contrario
      */
-    public function intervalo_trasbordo() {
-        $feriado = $this->tiempo->es_feriado();
-		$sabado = 6 == date( 'w', $this->tiempo->time() ) && ( date( 'G', $this->tiempo->time() ) >= 14 && date( 'G', $this->tiempo->time() ) < 22);
-		$domingo = 0 == date( 'w', $this->tiempo->time() ) && ( date( 'G', $this->tiempo->time() ) >= 6 && date( 'G', $this->tiempo->time() ) < 22);
-		$noche = 22 == date( 'G', $this->tiempo->time() ) && date( 'G', $this->tiempo->time() ) < 6;
+    public function trasbordoEspecial() {
+        $feriado = $this->tiempo->feriado();
+		$sabado = $this->tiempo->diaDeSemana() == 6 &&  $this->tiempo->dentroDeHoras(14,22);
+		$domingo = $this->tiempo->diaDeSemana() == 0 && $this->tiempo->dentroDeHoras(6,22);
+		$noche = $this->tiempo->dentroDeHoras(22,24) || $this->tiempo->dentroDeHoras(0,6); 
 		return ($sabado || $domingo || $noche || $feriado);
     }
 
@@ -299,9 +225,13 @@ class Tarjeta implements Tarjeta_Interface {
      * 
      * @return void
      */
-    public function guardo_cole ($colectivo ) {
+    public function setUltimoColectivo ( $colectivo ) {
         $this->linea_anterior = $colectivo->linea();
 		$this->numero_anterior = $colectivo->numero();
+    }
+	
+	public function setUltimoPago ( $tiempo ) {
+        $this->ultimo_pago = $tiempo;
     }
 
 }

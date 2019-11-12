@@ -3,7 +3,7 @@
 namespace TrabajoTarjeta;
 
 
-class Tarjeta_Medio_Boleto extends Tarjeta {
+class Tarjeta_Medio_Boleto implements Tarjeta_Interface {
 
 use Pagos;
 
