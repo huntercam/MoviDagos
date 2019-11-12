@@ -2,7 +2,7 @@
 
 namespace TrabajoTarjeta;
 
-class Tarjeta_Franquicia_Completa implements TarjetaInterface {
+class Tarjeta_Franquicia_Completa extends Tarjeta {
     protected $valor = 0.0;
     protected $caso = 'Franquicia Completa';
 
@@ -12,7 +12,9 @@ class Tarjeta_Franquicia_Completa implements TarjetaInterface {
      * @return true 
      *      Como la franquicia completa siempre es capaz de pagar un viaje la funcion solo devuelve true
      */
-    public function pagar_tarjeta( ColectivoInterface $colectivo , $tiempo ) {
+    public function pagarConTarjeta( ColectivoInterface $colectivo , $tiempo ) {
+		$this->setUltimoPago( $tiempo );
+        $this->setUltimoColectivo( $colectivo );
         return new Boleto($colectivo, $this, $valor, $caso , $tiempo );;
     }
 	
