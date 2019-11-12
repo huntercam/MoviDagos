@@ -115,7 +115,7 @@ use Costos;
         $this->assertEquals( $boleto->getValor() , $this->getCostoMedioBoleto() );
 		
         $tiempo->avanzar( 300 );
-        $boleto = $medio_boleto->pagarConTarjeta( $colectivo , $tiempo );
+        $boleto = $medio_boleto->pagarConTarjeta( $colectivo2 , $tiempo );
         $this->assertEquals( $boleto->getValor(), $this->getCostoTransbordo() );
     }
 
@@ -138,7 +138,7 @@ use Costos;
         $medio_boleto->gastarPlus();
 		
         $tiempo->avanzar( 300 );
-        $boleto = $medio_boleto->pagarConTarjeta( $colectivo , $tiempo );
+        $boleto = $medio_boleto->pagarConTarjeta( $colectivo2 , $tiempo );
 		
         $this->assertEquals( $boleto->getValor(), $this->getCostoViaje() );
     }
@@ -163,7 +163,7 @@ use Costos;
         $medio_boleto->gastarPlus();
         $tiempo->avanzar( 300 );
 		
-        $boleto = $medio_boleto->pagarConTarjeta( $colectivo , $tiempo );
+        $boleto = $medio_boleto->pagarConTarjeta( $colectivo2 , $tiempo );
         $this->assertEquals( $boleto->getValor(), $this->getCostoViaje()*2 );
     }
 }
