@@ -12,7 +12,7 @@ use Costos;
      * @return void
      */
     public function test_medio_boleto_universitario_tiempo() {
-        $tiempo = new Tiempo_Falso();
+        $tiempo = new Tiempo();
         $tiempo->avanzar( 36000 );
         $medio_boleto = new Tarjeta_Medio_Boleto_Universitario( Null );
         $colectivo = new Colectivo( 'mixta', '103', 420 );
@@ -37,7 +37,7 @@ use Costos;
      * @return void
      */
     public function test_medio_boleto_un_viajeplus(){
-        $tiempo = new Tiempo_Falso();
+        $tiempo = new Tiempo();
         $tiempo->avanzar( 36000 );
         $medio_boleto = new Tarjeta_Medio_Boleto_Universitario( Null );
         $colectivo = new Colectivo( 'mixta', '133', 420 );
@@ -61,7 +61,7 @@ use Costos;
      */
 
     public function test_medio_boleto_trasbordo_normal(){
-        $tiempo = new Tiempo_Falso();
+        $tiempo = new Tiempo();
         $tiempo->avanzar( 36000 );
         $medio_boleto = new Tarjeta_Medio_Boleto_Universitario( Null );
         $colectivo = new Colectivo( 'mixta', '133', 420 );
@@ -82,7 +82,7 @@ use Costos;
      * @return void
      */
     public function test_medio_boleto_trasbordo_CUVP(){
-        $tiempo = new Tiempo_Falso();
+        $tiempo = new Tiempo();
         $tiempo->avanzar( 36000 );
         $medio_boleto = new Tarjeta_Medio_Boleto_Universitario( Null );
         $colectivo = new Colectivo( 'mixta', '133', 420 );
@@ -104,7 +104,7 @@ use Costos;
      * @return void
      */
     public function test_medio_boleto_trasbordo_plus(){
-        $tiempo = new Tiempo_Falso();
+        $tiempo = new Tiempo();
         $tiempo->avanzar( 36000 );
         $medio_boleto = new Tarjeta_Medio_Boleto_Universitario( Null );
         $colectivo = new Colectivo( 'mixta', '133', 420 );
