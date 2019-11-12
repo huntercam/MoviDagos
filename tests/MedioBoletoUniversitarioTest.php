@@ -23,8 +23,8 @@ use Costos;
         $this->assertEquals( $boleto->getValor(), $this->getCostoMedioBoleto() );
 		
         $tiempo->avanzar( 300 );
-        $boleto = $medio_boleto->pagarConTarjeta( $colectivo , $tiempo );
-        $this->assertEquals( $boleto->getValor(), 0.0 );
+        $boleto = $medio_boleto->pagarConTarjeta( $colectivo2 , $tiempo );
+        $this->assertEquals( $boleto->getValor(), $this->getCostoTransbordo() );
 		
         $tiempo->avanzar( 7200 );
         $boleto = $medio_boleto->pagarConTarjeta( $colectivo , $tiempo );
