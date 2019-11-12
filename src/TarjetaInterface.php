@@ -82,6 +82,6 @@ interface TarjetaInterface {
      * 
      * @return float 
      */
-    public function hayTransbordo( ColectivoInterface $colectivo );
+    public function hayTransbordo( ColectivoInterface $colectivo , $tiempo );
 
 }
