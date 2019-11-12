@@ -226,12 +226,12 @@ class Tarjeta implements TarjetaInterface {
      * @return void
      */
     public function setUltimoColectivo ( $colectivo ) {
-        $this->linea_anterior = $colectivo->linea();
-		$this->numero_anterior = $colectivo->numero();
+        $this->lineaAnterior = $colectivo->linea();
+		$this->numeroAnterior = $colectivo->numero();
     }
 	
 	public function setUltimoPago ( $tiempo ) {
-        $this->ultimo_pago = $tiempo;
+        $this->ultimoPago = $tiempo;
     }
 
 }

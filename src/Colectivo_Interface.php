@@ -25,15 +25,6 @@ interface Colectivo_Interface {
      */
     public function numero();
 
-    /**
-     * Paga un viaje en el colectivo con una tarjeta en particular.
-     *
-     * @param TarjetaInterface $tarjeta
-     *
-     * @return BoletoInterface|FALSE
-     *  El boleto generado por el pago del viaje. O FALSE si no hay saldo
-     *  suficiente en la tarjeta.
-     */
-    public function pagar_con( Tarjeta_Interface $tarjeta );
+
 
 }

@@ -14,10 +14,10 @@ class Datos_Boleto_Test extends TestCase {
 
     public function test_boleto_normal() {
         $tiempo_prueba = new Tiempo();
-        $tarjeta = new Tarjeta($tiempo_prueba, NULL);
+        $tarjeta = new Tarjeta( NULL );
         $colectivo = new Colectivo( 'mixta', '103', 420 );
         $tarjeta->recargar( 20.0 );
-        $boleto = $colectivo->pagar_con( $tarjeta );
+        $boleto = $tarjeta->pagarConTarjeta( $colectivo , $tiempo_prueba );
         $this->assertEquals( $boleto->obtener_valor(), 14.80 );
         $this->assertEquals( $boleto->obtener_saldo(), 5.20 );
         $this->assertEquals( $boleto->obtener_tarjeta_id(), $tarjeta->obtener_id() );
