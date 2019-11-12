@@ -2,7 +2,7 @@
 
 namespace TrabajoTarjeta;
 
-require('Costos.php');
+//require('Costos.php');
 
 
 

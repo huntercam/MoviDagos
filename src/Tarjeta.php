@@ -1,7 +1,7 @@
 <?php
 
 namespace TrabajoTarjeta;
-require('TarjetaInterface.php');
+//require('TarjetaInterface.php');
 
 
 class Tarjeta implements TarjetaInterface {
@@ -169,7 +169,7 @@ class Tarjeta implements TarjetaInterface {
      * @return int
      */
     public function getUltimoUso() {
-        return $this->ultimo_pago;
+        return $this->ultimoPago;
     }
 
 
@@ -190,7 +190,7 @@ class Tarjeta implements TarjetaInterface {
      *      Devuelve true si se esta usando un colectivo diferente y false en caso contrario 
      */
 	public function EsOtroColectivo( $colectivo ) {	
-		return ( ( $this->linea_anterior != $colectivo->linea() ) || ( $this->numero_anterior != $colectivo->numero() ) );
+		return ( ( $this->lineaAnterior != $colectivo->linea() ) || ( $this->numeroAnterior != $colectivo->numero() ) );
     }
 
     /**

@@ -3,7 +3,7 @@
 namespace TrabajoTarjeta;
 
 
-require('BoletoInterface.php');
+//require('BoletoInterface.php');
 
 class Boleto implements BoletoInterface {
 
