@@ -10,7 +10,7 @@ class Tarjeta implements TarjetaInterface {
 	
 	protected $id;
 	
-    protected $saldo = 0;
+    protected $saldo = 0.0;
 
     protected $viajesPlus = 2;
 

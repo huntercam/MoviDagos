@@ -50,7 +50,7 @@ use Costos;
         $tiempo_prueba = new Tiempo();
         $tarjeta = new Tarjeta( NULL );
         $colectivo = new Colectivo( 'mixta', '103', 420 );
-        $tarjeta->gastar_plus();
+        $tarjeta->gastarPlus();
         $tarjeta->recargar( 50.0 );
         $boleto = $tarjeta->pagarConTarjeta( $colectivo , $tiempo_prueba );
         $this->assertEquals( $boleto->getValor(), $this->getCostoViaje() * 2 );
