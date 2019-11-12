@@ -34,16 +34,17 @@ class Tarjeta implements TarjetaInterface {
      *      La cantidad de dinero a recargar
      */
     public function recargar( $monto ) {
-	  if( $monto == $this->getMontoPromo1() ) {
-			$this->saldo +=  $monto + $this->getMontoAdicionalPromo1() ;
-		return True;	    
-	  }
-	  if( $monto == $this->getMontoPromo2()) {
-			$this->saldo +=  $monto + $this->getMontoAdicionalPromo2();
-		return True;	    
-	  }
-		$this->saldo +=  $monto;
-		return True;
+      if( $monto >= $this->getMontoPromo1() ){
+          if( $monto >= $this->getMontoPromo2() ){
+              $this->saldo += $monto + $this->getMontoAdicionalPromo2();
+              return True;
+          }else{
+            $this->saldo +=  $monto + $this->getMontoAdicionalPromo1() ;
+            return True;
+          }
+      }
+	    $this->saldo +=  $monto;
+		  return True;
     }
 
     /**
